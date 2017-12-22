@@ -1,5 +1,6 @@
-package io.github.dziadeusz;
+package io.github.dziadeusz.tree.persistence;
 
+import io.github.dziadeusz.tree.dto.TreeDto;
 import org.hibernate.query.Query;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,7 +16,7 @@ public class TreeDao {
     }
 
     @Transactional(readOnly = true)
-    public List<TreeDto> getTreesWithIncorrectPagination(int page, int size) {
+    public List<TreeDto> getTreesWithIncorrectPagination(final int page, final int size) {
         final int offset = page * size;
         return entityManager.createNativeQuery(
                 "SELECT " +
@@ -31,12 +32,11 @@ public class TreeDao {
                 .unwrap(Query.class)
                 .setFirstResult(offset)
                 .setMaxResults(size)
-                .setResultTransformer(new TreeResultTransformer()).list()
-                ;
+                .setResultTransformer(new TreeResultTransformer()).list();
     }
 
     @Transactional(readOnly = true)
-    public List<TreeDto> getTreesWithOffsetPagination(int page, int size) {
+    public List<TreeDto> getTreesWithOffsetPagination(final int page, final int size) {
         final int offset = page * size;
         return entityManager.createNativeQuery(
                 "SELECT " +
@@ -58,8 +58,7 @@ public class TreeDao {
                 .unwrap(Query.class)
                 .setParameter("treeLimit",offset)
                 .setParameter("treeOffset", size)
-                .setResultTransformer(new TreeResultTransformer()).list()
-                ;
+                .setResultTransformer(new TreeResultTransformer()).list();
     }
 
 }

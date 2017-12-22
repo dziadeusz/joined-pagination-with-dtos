@@ -1,5 +1,9 @@
 package io.github.dziadeusz
 
+import io.github.dziadeusz.tree.persistence.TreeDao
+import io.github.dziadeusz.tree.dto.BranchDto
+import io.github.dziadeusz.tree.dto.LeafDto
+import io.github.dziadeusz.tree.dto.TreeDto
 import net.ttddyy.dsproxy.asserts.ProxyTestDataSource
 import net.ttddyy.dsproxy.support.ProxyDataSourceBuilder
 import org.springframework.beans.factory.annotation.Autowired

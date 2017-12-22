@@ -17,7 +17,7 @@ apply plugin: 'org.springframework.boot'
 group 'io.github.dziadeusz'
 version '1.0-SNAPSHOT'
 
-ext['hibernate.version'] = '5.2.11.Final'
+ext['hibernate.version'] = '5.2.12.Final'
 
 sourceCompatibility = 1.8
 

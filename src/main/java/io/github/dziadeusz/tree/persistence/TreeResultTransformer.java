@@ -1,20 +1,25 @@
-package io.github.dziadeusz;
+package io.github.dziadeusz.tree.persistence;
 
+import io.github.dziadeusz.tree.dto.BranchDto;
+import io.github.dziadeusz.tree.dto.LeafDto;
+import io.github.dziadeusz.tree.dto.TreeDto;
 import org.hibernate.transform.BasicTransformerAdapter;
 
 import java.math.BigInteger;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class TreeResultTransformer extends BasicTransformerAdapter {
 
+    private static final String TREE_ID_COLUMN = "TREE_ID";
+    private static final String TREE_NAME_COLUMN = "TREE_NAME";
+    private static final String BRANCH_ID_COLUMN = "BRANCH_ID";
+    private static final String BRANCH_NAME_COLUMN = "BRANCH_NAME";
+    private static final String LEAF_ID_COLUMN = "LEAF_ID";
+    private static final String LEAF_NAME_COLUMN = "LEAF_NAME";
+
     private final Map<Long, TreeDto> trees = new HashMap<>();
     private final Map<Long, BranchDto> branches = new HashMap<>();
-    private final String TREE_ID_COLUMN = "TREE_ID";
-    private final String TREE_NAME_COLUMN = "TREE_NAME";
-    private final String BRANCH_ID_COLUMN = "BRANCH_ID";
-    private final String BRANCH_NAME_COLUMN = "BRANCH_NAME";
-    private final String LEAF_ID_COLUMN = "LEAF_ID";
-    private final String LEAF_NAME_COLUMN = "LEAF_NAME";
 
     @Override
     public Object transformTuple(final Object[] tuple, final String[] aliases) {
@@ -25,22 +30,22 @@ public class TreeResultTransformer extends BasicTransformerAdapter {
         return tree;
     }
 
-    private void addNewLeafToBranch(Object[] tuple, List<String> aliasesList, BranchDto branch) {
-        BigInteger leafIdToParse = (BigInteger) tuple[aliasesList.indexOf(LEAF_ID_COLUMN)];
-        Long leafId = leafIdToParse!=null ? leafIdToParse.longValue() : null;
-        if(leafId != null){
-            String leafName = (String) tuple[aliasesList.indexOf(LEAF_NAME_COLUMN)];
+    private void addNewLeafToBranch(final Object[] tuple, final List<String> aliasesList, final BranchDto branch) {
+        final BigInteger leafIdToParse = (BigInteger) tuple[aliasesList.indexOf(LEAF_ID_COLUMN)];
+        final Long leafId = leafIdToParse != null ? leafIdToParse.longValue() : null;
+        if (leafId != null) {
+            final String leafName = (String) tuple[aliasesList.indexOf(LEAF_NAME_COLUMN)];
             branch.addLeaf(LeafDto.builder().id(leafId).name(leafName).build());
         }
     }
 
-    private BranchDto getBranchOrAddNew(Object[] tuple, List<String> aliasesList, TreeDto tree) {
+    private BranchDto getBranchOrAddNew(final Object[] tuple, final List<String> aliasesList, final TreeDto tree) {
         BranchDto branch = null;
-        BigInteger branchIdToParse = (BigInteger) tuple[aliasesList.indexOf(BRANCH_ID_COLUMN)];
-        Long branchId = branchIdToParse!=null ? branchIdToParse.longValue() : null;
+        final BigInteger branchIdToParse = (BigInteger) tuple[aliasesList.indexOf(BRANCH_ID_COLUMN)];
+        final Long branchId = branchIdToParse != null ? branchIdToParse.longValue() : null;
         if (branchId != null) {
             if (!branches.containsKey(branchId)) {
-                String branchName = (String) tuple[aliasesList.indexOf(BRANCH_NAME_COLUMN)];
+                final String branchName = (String) tuple[aliasesList.indexOf(BRANCH_NAME_COLUMN)];
                 branch = BranchDto.builder().id(branchId).name(branchName).build();
                 tree.addBranch(branch);
                 branches.put(branchId, branch);
@@ -67,8 +72,7 @@ public class TreeResultTransformer extends BasicTransformerAdapter {
     }
 
     @Override
-    public List transformList(List records) {
-        final ArrayList<TreeDto> trees = new ArrayList(this.trees.values());
-        return trees;
+    public List transformList(final List records) {
+        return (List) records.stream().distinct().collect(Collectors.toList());
     }
 }

@@ -1,4 +1,4 @@
-package io.github.dziadeusz;
+package io.github.dziadeusz.tree.dto;
 
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -12,6 +12,7 @@ import java.util.Set;
 @Value
 @EqualsAndHashCode(of = {"id"})
 public class BranchDto {
+
     private Long id;
     private String name;
     private Set<LeafDto> leafs = new HashSet<>();

@@ -1,6 +1,7 @@
-package io.github.dziadeusz;
+package io.github.dziadeusz.tree.dto;
 
 
+import io.github.dziadeusz.tree.dto.BranchDto;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
