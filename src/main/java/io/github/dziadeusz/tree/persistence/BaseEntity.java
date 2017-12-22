@@ -16,4 +16,5 @@ class BaseEntity {
 
     @Id
     Long id;
+
 }
