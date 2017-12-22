@@ -16,6 +16,20 @@ public class TreeDao {
     }
 
     @Transactional(readOnly = true)
+    public List<Tree> getTreeEntitiesWithInMemoryPagination(final int page, final int size) {
+        final int offset = page * size;
+        return entityManager.createQuery(
+                "SELECT t " +
+                            "FROM Tree t " +
+                            "LEFT JOIN FETCH t.branches b "+
+                            "LEFT JOIN FETCH b.leafs l", Tree.class)
+                .unwrap(Query.class)
+                .setMaxResults(size)
+                .setFirstResult(offset)
+                .list();
+    }
+
+    @Transactional(readOnly = true)
     public List<TreeDto> getTreesWithIncorrectPagination(final int page, final int size) {
         final int offset = page * size;
         return entityManager.createNativeQuery(

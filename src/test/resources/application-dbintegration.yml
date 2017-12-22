@@ -4,7 +4,7 @@ spring:
     url: "jdbc:h2:mem:db"
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: none
     properties:
       hibernate:
         format_sql: true
