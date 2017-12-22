@@ -4,7 +4,10 @@ import io.github.dziadeusz.tree.persistence.TreeDao
 import io.github.dziadeusz.tree.dto.BranchDto
 import io.github.dziadeusz.tree.dto.LeafDto
 import io.github.dziadeusz.tree.dto.TreeDto
+import net.ttddyy.dsproxy.asserts.ParameterKeyValue
+import net.ttddyy.dsproxy.asserts.PreparedExecution
 import net.ttddyy.dsproxy.asserts.ProxyTestDataSource
+import net.ttddyy.dsproxy.asserts.QueryExecution
 import net.ttddyy.dsproxy.support.ProxyDataSourceBuilder
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
@@ -32,36 +35,49 @@ class FetchingPaginatedDataAsDtos extends Specification {
     private static final int LEAFS_PER_BRANCH = 3
 
     @Autowired
-    TreeDao uut;
+    final TreeDao uut;
+    @Autowired
+    private ProxyTestDataSource proxyTestDataSource;
+
+    void setup() {
+        proxyTestDataSource.reset()
+    }
 
     def "should get incorrectly paginated trees with offset and limit applied to cross product"() {
         given:
-        int page = 1;
-        int size = 4;
+        int page = 2;
+        int size = 3;
         when:
         List<TreeDto> trees = uut.getTreesWithIncorrectPagination(page, size);
         then:
         Set<BranchDto> branches = trees.branches.flatten()
         Set<LeafDto> leafs = branches.leafs.flatten()
-        trees.size()==2
-        branches.size() == 2
+        trees.size()==1
+        branches.size() == 1
         leafs.size()== size
-        leafs.name as Set == (page * size + 1..page * size + size).collect {it -> 'test leaf ' + it} as Set
+        leafs.name as Set == ['test leaf 7', 'test leaf 8', 'test leaf 9'] as Set
+        List<PreparedExecution> executions = proxyTestDataSource.getQueryExecutions();
+        executions.size() == 1
+        def execution = executions.get(0);
+        def limitAndOffset = execution.getAllParameters().value;
+        limitAndOffset == [3, 6]
     }
 
     def "should get corretly paginated trees with offset and limit applied to tree table"() {
         given:
-        int page = 1;
-        int size = 4;
+        int page = 2;
+        int size = 3;
         when:
         List<TreeDto> trees = uut.getTreesWithOffsetPagination(page, size);
         then:
         Set<BranchDto> branches = trees.branches.flatten()
         Set<LeafDto> leafs = branches.leafs.flatten()
         trees.size()== size
-        trees.name as Set == ['test tree 5', 'test tree 6', 'test tree 7', 'test tree 8'] as Set
+        trees.name as Set == ['test tree 7', 'test tree 8', 'test tree 9'] as Set
         branches.size() == size * BRANCHES_PER_TREE
         leafs.size()== size * BRANCHES_PER_TREE * LEAFS_PER_BRANCH
+        List<PreparedExecution> executions = proxyTestDataSource.getQueryExecutions();
+        executions.size() == 1
     }
 
     @TestConfiguration

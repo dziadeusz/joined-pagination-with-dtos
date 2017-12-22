@@ -56,8 +56,8 @@ public class TreeDao {
                         "LEFT OUTER JOIN branch b ON P_t.id = b.tree_id "+
                         "LEFT OUTER JOIN leaf l ON b.id = l.branch_id")
                 .unwrap(Query.class)
-                .setParameter("treeLimit",offset)
-                .setParameter("treeOffset", size)
+                .setParameter("treeLimit",size)
+                .setParameter("treeOffset", offset)
                 .setResultTransformer(new TreeResultTransformer()).list();
     }
 
